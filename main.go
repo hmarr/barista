@@ -5,18 +5,11 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/user"
+	"path"
 )
 
 type Schedule map[string]TimeRange
-
-//    Monday    string `json:"monday"`
-//    Tuesday   string `json:"tuesday"`
-//    Wednesday string `json:"wednesday"`
-//    Thursday  string `json:"thursday"`
-//    Friday    string `json:"friday"`
-//    Saturday  string `json:"saturday"`
-//    Sunday    string `json:"sunday"`
-//}
 
 func loadSchedule(path string) (Schedule, error) {
 	data, err := ioutil.ReadFile(path)
@@ -33,7 +26,14 @@ func loadSchedule(path string) (Schedule, error) {
 }
 
 func main() {
-	schedule, err := loadSchedule("config.json")
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	configPath := path.Join(usr.HomeDir, ".config/barista/schedule.json")
+	schedule, err := loadSchedule(configPath)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
